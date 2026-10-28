@@ -10,18 +10,21 @@ base = os.environ.get('MDM_SMOKE_BASE', 'http://127.0.0.1:9095')
 credentials = Path.home() / '.local/share/schoolday-mdm/admin-login.txt'
 password = next(line.split(': ', 1)[1] for line in credentials.read_text().splitlines() if line.startswith('Temporary password: '))
 client = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+client.addheaders = [('User-Agent', 'SchoolDay-MDM-Smoke/1.0')]
 payload = json.dumps({'login': 'admin', 'password': hashlib.md5(password.encode()).hexdigest().upper()}).encode()
 request = urllib.request.Request(base + '/rest/public/auth/login', data=payload, headers={'Content-Type': 'application/json'})
 with client.open(request, timeout=20) as response:
     result = json.load(response)
 assert result.get('status') == 'OK', 'Login failed'
 print('Login accepted; response secrets withheld.')
-if os.environ.get('MDM_SMOKE_ENROLL') == '1':
+if os.environ.get('MDM_SMOKE_ENROLL') == '1' and not result.get('data', {}).get('passwordReset'):
     request = urllib.request.Request(base + '/rest/private/agent/v1/token', data=b'{}', headers={'Content-Type': 'application/json'})
     with client.open(request, timeout=20) as response:
         enrollment = json.load(response)
     assert enrollment.get('status') == 'OK' and enrollment.get('data', {}).get('token'), 'Enrollment token creation failed'
     print('Single-use enrollment token creation accepted; token withheld and not used.')
+elif os.environ.get('MDM_SMOKE_ENROLL') == '1':
+    print('Enrollment API requires the administrator to complete first-login password setup.')
 logout = urllib.request.Request(base + '/rest/public/auth/logout', data=b'{}', headers={'Content-Type': 'application/json'})
 client.open(logout, timeout=20).close()
 for route in ['/', '/healthz', '/healthz/supervisor']:
