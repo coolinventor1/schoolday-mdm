@@ -1,5 +1,5 @@
 """Verify release signing and create public, non-secret enrollment metadata."""
-import base64, hashlib, json, os, pathlib, shutil, subprocess
+import base64, hashlib, json, os, pathlib, shutil, subprocess, re
 root = pathlib.Path(__file__).resolve().parents[1]
 private = pathlib.Path.home() / 'SchoolDay-private-backups/mdm-signing'
 java = pathlib.Path.home() / '.jdks/ms-21.0.11/bin'
@@ -20,6 +20,8 @@ assert 'com.mdmesh.agent.admin.AdminReceiver' in manifest
 destination = root / 'enrollment'
 destination.mkdir(exist_ok=True)
 shutil.copyfile(apk, destination / 'schoolday-agent.apk')
+version = re.search(r"versionCode='(\d+)'", badging).group(1)
+shutil.copyfile(apk, destination / f'schoolday-agent-v{version}.apk')
 metadata = {'package': 'com.mdmesh.agent', 'apk_sha256': hashlib.sha256(apk.read_bytes()).hexdigest(), 'signing_certificate_sha256_base64url': base64.urlsafe_b64encode(digest).decode().rstrip('='), 'package_badging': badging.splitlines()[0]}
 (destination / 'agent-metadata.json').write_text(json.dumps(metadata, indent=2) + '\n')
 print('Release signature, package, manifest and non-debuggable status verified.')

@@ -7,13 +7,15 @@ def fetch(path):
     with urllib.request.urlopen(request, timeout=60) as response:
         assert response.status == 200
         return response.read()
-assert hashlib.sha256(fetch('/enrollment/schoolday-agent.apk')).hexdigest() == metadata['apk_sha256']
+version = re.search(r"versionCode='(\d+)'", metadata['package_badging']).group(1)
+apk_path = f'/enrollment/schoolday-agent-v{version}.apk'
+assert hashlib.sha256(fetch(apk_path)).hexdigest() == metadata['apk_sha256']
 print('Public HTTPS APK matches the verified signed release byte for byte.')
 html = fetch('/login').decode()
 paths = re.findall(r'src="(/assets/[^" ]+\.js)"', html)
 assert paths, 'No application bundle found'
 bundle = '\n'.join(fetch(path).decode() for path in paths)
-for expected in [metadata['signing_certificate_sha256_base64url'], 'com.mdmesh.agent', base + '/enrollment/schoolday-agent.apk']:
+for expected in [metadata['signing_certificate_sha256_base64url'], 'com.mdmesh.agent', base + apk_path]:
     assert expected in bundle, 'Enrollment build value missing'
 assert 'com.mdmesh.agent.debug' not in bundle, 'Debug enrollment package still present'
 print('Public enrollment bundle contains the correct release package, certificate checksum and download URL.')
