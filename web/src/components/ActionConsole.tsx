@@ -53,7 +53,7 @@ export function ActionConsole({ device }: { device: Device }) {
 
   function start(t: CommandTemplateExt) {
     setActive(t);
-    setValues({});
+    setValues(Object.fromEntries((t.params ?? []).map(p => [p.key, p.defaultValue ?? ''])));
     setConfirmText('');
   }
 
@@ -151,9 +151,12 @@ export function ActionConsole({ device }: { device: Device }) {
             <p className="muted">{active.description}</p>
             {active.params?.map((p) => (
               <label key={p.key} className="field">
-                <span>{p.label}</span>
+                <span>{p.label}{p.kind === 'range' ? `: ${values[p.key]}%` : ''}</span>
                 <input
-                  type={p.kind === 'password' ? 'password' : p.kind === 'number' ? 'number' : 'text'}
+                  type={p.kind}
+                  min={p.min}
+                  max={p.max}
+                  step={p.kind === 'range' ? 1 : undefined}
                   placeholder={p.placeholder}
                   value={values[p.key] ?? ''}
                   onChange={(e) => setValues((v) => ({ ...v, [p.key]: e.target.value }))}

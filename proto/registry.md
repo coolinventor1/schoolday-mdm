@@ -94,3 +94,7 @@ string, except `configApply`.
 | `remote.stopSession` | — | `{ sessionId }`. Planned: no agent handler yet. |
 
 Per-type payload JSON Schemas go in `proto/payloads/` as the registry grows.
+
+### SchoolDay device brightness
+
+`device.brightness` requires capability `device.brightness` and payload `{ "percent": 1..100 }` (integer). Agent v18+ requires Android 9+ and device ownership, disables automatic brightness, maps percent to Android 1..255, and verifies saved mode/value before DONE. Invalid values fail without writing; unsupported devices return UNSUPPORTED. Command detail contains the applied percentage and raw readback. Existing kiosk state is unchanged.

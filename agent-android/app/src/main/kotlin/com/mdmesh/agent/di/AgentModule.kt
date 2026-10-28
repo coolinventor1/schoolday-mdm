@@ -23,6 +23,7 @@ import com.mdmesh.core.command.handlers.DeviceAlertHandler
 import com.mdmesh.core.command.handlers.DeviceLockHandler
 import com.mdmesh.core.command.handlers.DeviceLockscreenMessageHandler
 import com.mdmesh.core.command.handlers.DevicePasscodeResetHandler
+import com.mdmesh.core.command.handlers.DeviceBrightnessHandler
 import com.mdmesh.core.command.handlers.DeviceRebootHandler
 import com.mdmesh.core.command.handlers.DeviceRingHandler
 import com.mdmesh.core.command.handlers.DeviceLocationModeHandler
@@ -295,6 +296,10 @@ object AgentModule {
     @IntoSet
     fun provideDeviceLockHandler(handle: DpmHandle): CommandHandler =
         DeviceLockHandler(handle)
+
+    @Provides @IntoSet
+    fun provideBrightnessHandler(@ApplicationContext context: Context, handle: DpmHandle): CommandHandler =
+        DeviceBrightnessHandler(context, handle)
 
     // --- Remote action handlers (multibound) ---
 

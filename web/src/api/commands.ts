@@ -116,7 +116,10 @@ export async function bulkQueueCommand(
 export interface ActionParam {
   key: string;
   label: string;
-  kind: 'text' | 'password' | 'number';
+  kind: 'text' | 'password' | 'number' | 'range';
+  min?: number;
+  max?: number;
+  defaultValue?: string;
   required?: boolean;
   placeholder?: string;
 }
@@ -133,6 +136,17 @@ export interface CommandTemplateExt extends CommandTemplate {
 }
 
 export const ACTION_TEMPLATES: CommandTemplateExt[] = [
+  {
+    key: 'brightness', label: 'Screen brightness', group: 'safe',
+    description: 'Set manual screen brightness from 1% to 100%. This turns off automatic brightness without leaving kiosk mode. The slider is a new target, not a live device reading.',
+    params: [{ key: 'percent', label: 'Brightness', kind: 'range', min: 1, max: 100, defaultValue: '50', required: true }],
+    request: { type: 'device.brightness', requiresCapability: 'device.brightness' },
+    build: (v) => {
+      const percent = Number(v.percent);
+      if (!Number.isInteger(percent) || percent < 1 || percent > 100) throw new Error('Choose brightness from 1% to 100%.');
+      return { type: 'device.brightness', requiresCapability: 'device.brightness', payload: JSON.stringify({ percent }) };
+    },
+  },
   {
     key: 'lockscreen-message', label: 'Set lock-screen message', group: 'safe',
     description: 'Show a custom message on the device lock screen (empty clears it).',

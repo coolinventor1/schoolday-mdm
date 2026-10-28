@@ -106,7 +106,7 @@ export function BulkActionModal({
   }
 
   function onPick(t: CommandTemplateExt) {
-    if (t.params && t.params.length > 0) { setActive(t); setValues({}); return; }
+    if (t.params && t.params.length > 0) { setActive(t); setValues(Object.fromEntries((t.params ?? []).map(p => [p.key, p.defaultValue ?? '']))); return; }
     void run(t, {});
   }
 
@@ -178,9 +178,12 @@ export function BulkActionModal({
             <p className="muted">This will run on <strong>{n}</strong> device{n === 1 ? '' : 's'}.</p>
             {active.params?.map((p) => (
               <label key={p.key} className="field">
-                <span>{p.label}</span>
+                <span>{p.label}{p.kind === 'range' ? `: ${values[p.key]}%` : ''}</span>
                 <input
-                  type={p.kind === 'password' ? 'password' : p.kind === 'number' ? 'number' : 'text'}
+                  type={p.kind}
+                  min={p.min}
+                  max={p.max}
+                  step={p.kind === 'range' ? 1 : undefined}
                   placeholder={p.placeholder}
                   value={values[p.key] ?? ''}
                   onChange={(e) => setValues((v) => ({ ...v, [p.key]: e.target.value }))}

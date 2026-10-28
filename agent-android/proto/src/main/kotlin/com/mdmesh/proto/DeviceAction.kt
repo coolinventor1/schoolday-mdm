@@ -11,6 +11,7 @@ package com.mdmesh.proto
 object DeviceAction {
     const val LOCK = "device.lock"
     const val REBOOT = "device.reboot"
+    const val BRIGHTNESS = "device.brightness"
     const val LOCKSCREEN_MESSAGE = "device.lockscreenMessage"
     const val ALERT = "device.alert"
     const val RING = "device.ring"
@@ -46,7 +47,7 @@ object DeviceAction {
 
     /** Keys (after the `device.` prefix) advertised in `capabilities.device`. */
     val ADVERTISED_KEYS: List<String> = listOf(
-        "lock", "reboot", "lockscreenMessage", "alert", "ring", "ringStop",
+        "brightness", "lock", "reboot", "lockscreenMessage", "alert", "ring", "ringStop",
         "passcodeReset", "wipe", "powerMode", "locationMode", "configApply", LOCATION_OFF_KEY,
     )
 }
