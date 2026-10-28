@@ -1,0 +1,11 @@
+[Unit]
+Description=SchoolDay MDM HTTPS tunnel
+After=network-online.target
+
+[Service]
+ExecStart=/home/user/.local/bin/cloudflared tunnel --config /home/user/schoolday-mdm/deploy/schoolday-tunnel.yml run
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

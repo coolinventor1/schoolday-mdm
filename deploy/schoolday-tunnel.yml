@@ -1,0 +1,7 @@
+tunnel: 16afe840-0363-43b2-a600-69ee6f7bf9b1
+credentials-file: /home/user/.cloudflared/16afe840-0363-43b2-a600-69ee6f7bf9b1.json
+metrics: 127.0.0.1:20243
+ingress:
+  - hostname: mdm.schoolday.one
+    service: http://127.0.0.1:9095
+  - service: http_status:404
