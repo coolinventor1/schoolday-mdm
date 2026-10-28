@@ -1,6 +1,6 @@
 {
   "package": "com.mdmesh.agent",
-  "apk_sha256": "c385e3907c69ad23dadcb6d188f12544c48651c4809f6fc1fa202c8a8d4cdd04",
+  "apk_sha256": "6c367491d9b55f77bde50a616d2b3a26d5732a332ec3ebe55ceffc9286dcd1f1",
   "signing_certificate_sha256_base64url": "4C9hYlXvpQlA36YivEEiC1utB51JHldq5fzo4IpIk-U",
-  "package_badging": "package: name='com.mdmesh.agent' versionCode='17' versionName='0.1.16-schoolday' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'"
+  "package_badging": "package: name='com.mdmesh.agent' versionCode='18' versionName='0.1.17-schoolday' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'"
 }
