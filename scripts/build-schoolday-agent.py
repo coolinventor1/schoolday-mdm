@@ -9,7 +9,7 @@ if not password_file.exists():
     password_file.write_text(secrets.token_hex(32))
 env = os.environ.copy()
 env['JAVA_HOME'] = r'C:\Users\Owner\.jdks\ms-21.0.11'
-env['ANDROID_HOME'] = r'C:\Users\Owner\OneDrive\Documents\ChatGPT\SchoolDay\passpoint-android\tools\sdk'
+env['ANDROID_HOME'] = str(pathlib.Path.home() / '.schoolday-mdm-sdk')
 env['MDM_RELEASE_STORE_FILE'] = str(key)
 env['MDM_RELEASE_STORE_PASSWORD'] = password_file.read_text().strip()
 env['MDM_RELEASE_KEY_PASSWORD'] = env['MDM_RELEASE_STORE_PASSWORD']

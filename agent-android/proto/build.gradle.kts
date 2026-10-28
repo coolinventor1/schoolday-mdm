@@ -12,7 +12,8 @@ java {
 }
 
 kotlin {
-    jvmToolchain(17)
+    // Use the build JDK while retaining Java 17 bytecode compatibility.
+    compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
 }
 
 dependencies {
