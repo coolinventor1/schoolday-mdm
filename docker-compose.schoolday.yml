@@ -3,6 +3,8 @@ services:
   caddy:
     ports:
       - "127.0.0.1:9095:80"
+    volumes:
+      - ./enrollment:/srv/enrollment:ro
   supervisor:
     environment:
       AUTO_UPDATE: "0"
