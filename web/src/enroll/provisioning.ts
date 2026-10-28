@@ -6,11 +6,10 @@
 //   VITE_AGENT_CHECKSUM    PROVISIONING_DEVICE_ADMIN_SIGNATURE_CHECKSUM of the signing cert
 //   VITE_AGENT_APK_URL     where the APK is hosted (default <origin>/files/agent.apk)
 
-const env = import.meta.env as Record<string, string | undefined>;
-
-const AGENT_PACKAGE = env.VITE_AGENT_PACKAGE || 'com.mdmesh.agent.debug';
+// Direct accesses let Vite replace deployment values and eliminate unused defaults.
+const AGENT_PACKAGE = import.meta.env.VITE_AGENT_PACKAGE || 'com.mdmesh.agent.debug';
 const ADMIN_COMPONENT = `${AGENT_PACKAGE}/com.mdmesh.agent.admin.AdminReceiver`;
-const SIGNATURE_CHECKSUM = env.VITE_AGENT_CHECKSUM || 'YMEWhg_-ydciRFgtdOZbQ-W_aPPz7orHKuqfn13Ujaw';
+const SIGNATURE_CHECKSUM = import.meta.env.VITE_AGENT_CHECKSUM || 'YMEWhg_-ydciRFgtdOZbQ-W_aPPz7orHKuqfn13Ujaw';
 
 /** Server origin — same-origin in production (Caddy serves the SPA and proxies the API). */
 export function serverBaseUrl(): string {
@@ -20,7 +19,7 @@ export function serverBaseUrl(): string {
 export function agentApkUrl(): string {
   // VITE_AGENT_APK_URL may be absolute (https://…) or origin-relative (/update/agent.apk → resolved
   // against this deployment's origin). Release builds set it to the supervisor's verified APK mirror.
-  const u = env.VITE_AGENT_APK_URL;
+  const u = import.meta.env.VITE_AGENT_APK_URL;
   if (u) return u.startsWith('/') ? `${serverBaseUrl()}${u}` : u;
   return `${serverBaseUrl()}/files/agent.apk`;
 }
