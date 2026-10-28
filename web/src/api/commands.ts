@@ -137,6 +137,20 @@ export interface CommandTemplateExt extends CommandTemplate {
 
 export const ACTION_TEMPLATES: CommandTemplateExt[] = [
   {
+    key: 'volume', label: 'Media volume', group: 'safe',
+    description: 'Set media volume. 0% mutes media; ringtone and alarm volume are unchanged.',
+    params: [{key:'percent',label:'Volume',kind:'range',min:0,max:100,defaultValue:'50',required:true}],
+    request: {type:'device.volume',requiresCapability:'device.volume'},
+    build: v => {
+      const percent=Number(v.percent);
+      if(!Number.isInteger(percent)||percent<0||percent>100) throw new Error('Volume must be 0–100%.');
+      return {type:'device.volume',requiresCapability:'device.volume',payload:JSON.stringify({percent})};
+    },
+  },
+  {key:'mute',label:'Mute media',group:'safe',description:'Set media volume to zero.',request:{type:'device.volume',requiresCapability:'device.volume',payload:JSON.stringify({percent:0})}},
+  {key:'passpoint-restart',label:'Restart PassPoint',group:'disruptive',confirm:'simple',description:'Restart the PassPoint process without rebooting the tablet. Any unfinished on-screen interaction is interrupted. Pairing and saved data are retained.',request:{type:'device.passpointRestart',requiresCapability:'device.passpointRestart'}},
+  {key:'diagnostics',label:'Collect diagnostics',group:'safe',description:'Refresh PassPoint health, storage, audio settings and recent agent event types. No student records, credentials or raw logs.',request:{type:'device.diagnostics',requiresCapability:'device.diagnostics'}},
+  {
     key: 'brightness', label: 'Screen brightness', group: 'safe',
     description: 'Set manual screen brightness from 1% to 100%. This turns off automatic brightness without leaving kiosk mode. The slider is a new target, not a live device reading.',
     params: [{ key: 'percent', label: 'Brightness', kind: 'range', min: 1, max: 100, defaultValue: '50', required: true }],

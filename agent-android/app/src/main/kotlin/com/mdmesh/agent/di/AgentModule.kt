@@ -23,6 +23,11 @@ import com.mdmesh.core.command.handlers.DeviceAlertHandler
 import com.mdmesh.core.command.handlers.DeviceLockHandler
 import com.mdmesh.core.command.handlers.DeviceLockscreenMessageHandler
 import com.mdmesh.core.command.handlers.DevicePasscodeResetHandler
+import com.mdmesh.core.device.OperationsCollector
+import com.mdmesh.core.device.PassPointMonitor
+import com.mdmesh.core.command.handlers.DeviceVolumeHandler
+import com.mdmesh.core.command.handlers.DeviceDiagnosticsHandler
+import com.mdmesh.core.command.handlers.PassPointRestartHandler
 import com.mdmesh.core.command.handlers.DeviceBrightnessHandler
 import com.mdmesh.core.command.handlers.DeviceRebootHandler
 import com.mdmesh.core.command.handlers.DeviceRingHandler
@@ -176,11 +181,13 @@ object AgentModule {
         identity: IdentityCollector,
         dynamic: DynamicStateCollector,
         security: SecurityCollector,
+        operations: OperationsCollector,
     ): TelemetrySource = TelemetryAssembler(
         hardware = { deviceInfo.collect() },
         identity = { identity.collect() },
         dynamic = { dynamic.collect() },
         security = { security.collect() },
+        operations = { operations.snapshot() },
     )
 
     // --- Command handlers (multibound). Add a command == add one @IntoSet provider. ---
@@ -300,6 +307,13 @@ object AgentModule {
     @Provides @IntoSet
     fun provideBrightnessHandler(@ApplicationContext context: Context, handle: DpmHandle): CommandHandler =
         DeviceBrightnessHandler(context, handle)
+
+    @Provides @IntoSet
+    fun provideVolumeHandler(@ApplicationContext context: Context): CommandHandler = DeviceVolumeHandler(context)
+    @Provides @IntoSet
+    fun provideDiagnosticsHandler(collector: OperationsCollector): CommandHandler = DeviceDiagnosticsHandler(collector)
+    @Provides @IntoSet
+    fun providePassPointRestartHandler(monitor: PassPointMonitor): CommandHandler = PassPointRestartHandler(monitor)
 
     // --- Remote action handlers (multibound) ---
 

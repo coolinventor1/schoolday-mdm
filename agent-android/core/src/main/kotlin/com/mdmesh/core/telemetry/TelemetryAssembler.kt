@@ -18,11 +18,13 @@ class TelemetryAssembler(
     private val identity: () -> IdentityInfo,
     private val dynamic: () -> DynamicState,
     private val security: () -> SecurityPosture,
+    private val operations: () -> kotlinx.serialization.json.JsonObject? = { null },
 ) : TelemetrySource {
     // A GPS fix can take seconds: collect off the caller's thread (the check-in service calls from Main).
     override suspend fun snapshot(): TelemetrySnapshot = withContext(Dispatchers.IO) {
         TelemetrySnapshot(
             dynamic = dynamic(),
+            operations = runCatching { operations() }.getOrNull(),
             hardware = runCatching { hardware() }.getOrNull(),
             identity = runCatching { identity() }.getOrNull(),
             security = runCatching { security() }.getOrNull(),

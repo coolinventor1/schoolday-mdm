@@ -4,10 +4,13 @@ import {
   listCommandHistory, forceSync, type DeviceState, type CommandHistoryItem,
 } from '../api/commands';
 import { useToast } from '../ui/toast';
+import { OperationsPanel } from './OperationsPanel';
+import { DeviceUpdates } from './DeviceUpdates';
+import { PersistentKiosk } from './PersistentKiosk';
 import { KioskEnterModal } from './KioskEnterModal';
 import { DO_NOT_TRACK_HINT, useDoNotTrack } from '../api/locationTracking';
 
-type Device = { number: string; configurationId?: number; description?: string };
+type Device = { id?: number; number: string; configurationId?: number; description?: string };
 
 const GROUPS: Array<{ id: 'safe' | 'disruptive' | 'destructive'; title: string }> = [
   { id: 'safe', title: 'Actions' },
@@ -129,6 +132,9 @@ export function ActionConsole({ device }: { device: Device }) {
         </section>
       ))}
 
+      <OperationsPanel number={device.number} />
+      <PersistentKiosk device={device} />
+      <DeviceUpdates number={device.number} history={history} />
       <CommandTimeline items={history} />
 
       {kioskOpen && (

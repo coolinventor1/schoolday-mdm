@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TelemetrySnapshot(
     val dynamic: DynamicState,
+    val operations: kotlinx.serialization.json.JsonObject? = null,
     val hardware: HardwareInfo? = null,
     val identity: IdentityInfo? = null,
     val security: SecurityPosture? = null,

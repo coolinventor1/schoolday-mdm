@@ -13,6 +13,7 @@ import {
   type ConfigurationLookup,
 } from '../api/devices';
 import { listConfigurations, type ConfigurationSummary } from '../api/configurations';
+import { DeviceGroups } from '../components/DeviceGroups';
 import { BulkActionModal } from '../components/BulkActionModal';
 
 type View = 'grid' | 'list';
@@ -65,6 +66,7 @@ export function DevicesPage() {
   const [view, setView] = useState<View>('grid');
   const [status, setStatus] = useState<StatusFilter>('all');
   const [config, setConfig] = useState('all');
+  const [group,setGroup]=useState('all');
   const [android, setAndroid] = useState('all');
   const [q, setQ] = useState('');
   const [dupOnly, setDupOnly] = useState(false);
@@ -134,6 +136,7 @@ export function DevicesPage() {
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return devices.filter((d) => {
+      if (group !== 'all' && !d.groups?.some(g=>String(g.id)===group)) return false;
       if (status === 'online' && !isOnline(d, now)) return false;
       if (status === 'offline' && isOnline(d, now)) return false;
       if (config !== 'all' && configName(d, configurations) !== config) return false;
@@ -145,7 +148,7 @@ export function DevicesPage() {
       }
       return true;
     });
-  }, [devices, status, config, android, q, dupOnly, dupCount, configurations, now]);
+  }, [devices, status, config, group, android, q, dupOnly, dupCount, configurations, now]);
 
   // Route by number (not id) so the detail page can fetch the device with a narrow search.
   const go = (d: DeviceView) => navigate(`/devices/${encodeURIComponent(d.number)}`);
@@ -228,6 +231,7 @@ export function DevicesPage() {
       </div>
 
       <div className="filters">
+        <DeviceGroups selected={[...selected]} value={group} onChange={v=>{setGroup(v);clearSel();}} onSaved={()=>void reload(q.trim())} />
         <button className={`filter-chip ${status === 'all' ? 'on' : ''}`} onClick={() => setStatus('all')}>
           All <b>{devices.length}</b>
         </button>

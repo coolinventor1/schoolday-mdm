@@ -44,6 +44,9 @@ class EventLog @Inject constructor(@ApplicationContext context: Context) : Event
         save(cap(events + load()))
     }
 
+    @Synchronized
+    fun peek(): List<TelemetryEventDto> = load()
+
     private fun load(): List<TelemetryEventDto> = decode(prefs.getString(KEY, null))
     private fun save(list: List<TelemetryEventDto>) {
         prefs.edit().putString(KEY, encode(list)).apply()

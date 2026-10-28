@@ -72,6 +72,20 @@ export function appCategory(a: Application): AppCategory {
 
 /** Create (id absent) or update an Android application in the Library. */
 export async function saveAndroidApplication(app: Partial<Application>): Promise<Application> {
+  // Adding a newer APK for an existing package creates a release, not a duplicate app row.
+  if (!app.id && app.pkg && app.versionCode != null) {
+    const existing = (await listApplications(app.pkg)).find(a => a.pkg === app.pkg);
+    if (existing) {
+      const versions = await getVersions(existing.id);
+      if (versions.some(v => v.versionCode === app.versionCode)) throw new Error('That version code already exists; use a higher code for a new release.');
+      const version = await apiClient.put<ApplicationVersion>('/private/applications/versions', {
+        applicationId: existing.id, version: app.version || String(app.versionCode),
+        versionCode: app.versionCode, url: app.url, parts: app.parts,
+      });
+      if (app.sha256) await setVersionSha256(version.id, app.sha256);
+      return {...existing, latestVersion: version.id, versionCode: app.versionCode, version: version.version};
+    }
+  }
   return apiClient.put<Application>('/private/applications/android', app);
 }
 

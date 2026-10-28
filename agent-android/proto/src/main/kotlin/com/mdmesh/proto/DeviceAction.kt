@@ -47,7 +47,7 @@ object DeviceAction {
 
     /** Keys (after the `device.` prefix) advertised in `capabilities.device`. */
     val ADVERTISED_KEYS: List<String> = listOf(
-        "brightness", "lock", "reboot", "lockscreenMessage", "alert", "ring", "ringStop",
+        "volume", "diagnostics", "passpointRestart", "brightness", "lock", "reboot", "lockscreenMessage", "alert", "ring", "ringStop",
         "passcodeReset", "wipe", "powerMode", "locationMode", "configApply", LOCATION_OFF_KEY,
     )
 }

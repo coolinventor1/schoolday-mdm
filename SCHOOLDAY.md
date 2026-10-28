@@ -44,3 +44,15 @@ Do not share enrollment QR codes: they contain authorization tokens (and Wi-Fi
 credentials when supplied). HTTPS/download checks do not prove successful physical
 tablet enrollment or unattended remote-control support. Esper ownership is not
 changed by deploying this server.
+
+## Fleet operations (agent v19 and PassPoint v9)
+
+- Device control: media volume 0–100 (0 mutes), cooperative PassPoint restart, diagnostics.
+- Health telemetry: UI heartbeat, foreground state, authenticated backend probe, app/agent versions, storage and media settings. Readings show timestamps and stale status.
+- Diagnostics export: bounded metadata and event categories; never student records, cookies, PINs, raw logcat or screenshots.
+- Persistent kiosk: assign a dedicated copy of the device configuration, pinned to the PassPoint library version. Original configuration and other devices remain available; empty exit PIN prevents on-device exit. Server reconciliation and boot reapply retain kiosk across agent updates.
+- Devices: create groups, add/remove selected devices, filter groups, and apply existing bulk actions/configurations.
+- App updates: scan installed versions, compare library releases, queue a checksum-verified update and inspect per-device command status. Publishing a new version of an existing package now creates a release instead of a duplicate app. Rescan after self-update because the old agent process cannot always acknowledge installation.
+- No screen schedules or maintenance mode were added.
+
+Commands: `device.volume` `{ "percent": 0..100 }`; `device.diagnostics` no payload; `device.passpointRestart` no payload. Each is capability gated. Diagnostics and restart run off the main thread.
