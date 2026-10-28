@@ -78,8 +78,13 @@ class KioskApplier(
     private fun lockTo(p: KioskApplyPayload): KioskResult {
         val features = lockTaskFeatures(
             KioskToggles(
-                home = p.features.home, recents = p.features.recents, notifications = p.features.notifications,
-                systemInfo = p.features.systemInfo, keyguard = p.features.keyguard, lockButtons = p.features.lockButtons,
+                // A pinned app must not expose navigation or the notification shade, even
+                // when an older console sends permissive feature flags.
+                home = p.mode != "single" && p.features.home == true,
+                recents = p.mode != "single" && p.features.recents == true,
+                notifications = p.mode != "single" && p.features.notifications == true,
+                systemInfo = p.mode != "single" && p.features.systemInfo == true,
+                keyguard = p.features.keyguard, lockButtons = p.features.lockButtons,
             ),
         )
         val allowed = (p.allowedPackages + listOfNotNull(p.pinPackage)).distinct()

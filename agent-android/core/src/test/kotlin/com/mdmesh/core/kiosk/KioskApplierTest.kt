@@ -21,6 +21,7 @@ class KioskApplierTest {
         var volumeResult: KioskResult = KioskResult.Ok,
     ) : KioskController {
         var entered: List<String>? = null; var exited = false
+        var enteredFeatures: Int? = null
         /** Every enter call's allowlist, in order; [failFor] makes an enter with that allowlist fail. */
         val enters = mutableListOf<List<String>>()
         var failFor: List<String>? = null
@@ -31,6 +32,7 @@ class KioskApplierTest {
         var safeModeResult: KioskResult = KioskResult.Ok
         override fun setSafeModeBlocked(blocked: Boolean): KioskResult { safeMode += blocked; return safeModeResult }
         override fun enter(homeComponent: ComponentName, allowedPackages: List<String>, features: Int): KioskResult {
+            enteredFeatures = features
             entered = allowedPackages; enters += allowedPackages
             return if (allowedPackages == failFor) KioskResult.Failed("dpm") else enterResult
         }
@@ -47,6 +49,15 @@ class KioskApplierTest {
     }
     private val home = ComponentName("com.mdmesh.agent", "com.mdmesh.agent.KioskHomeAlias")
     private fun setting(value: Boolean?) = object : SafeModeSetting { override fun current() = value }
+
+    @Test fun `single app ignores permissive system navigation flags from old consoles`() = runTest {
+        val controller = FakeController(KioskResult.Ok)
+        val result = KioskApplier(controller, InMemoryKioskStateStore(), FakeHome(), home) { false }
+            .enter(KioskApplyPayload(mode = "single", pinPackage = "com.a",
+                features = KioskFeaturesDto(home = true, recents = true, notifications = true, systemInfo = true)))
+        assertEquals(KioskResult.Ok, result)
+        assertEquals(android.app.admin.DevicePolicyManager.LOCK_TASK_FEATURE_GLOBAL_ACTIONS, controller.enteredFeatures)
+    }
 
     @Test fun `enter ok persists payload and shows launcher`() = runTest {
         val c = FakeController(KioskResult.Ok); val h = FakeHome(); val store = InMemoryKioskStateStore()

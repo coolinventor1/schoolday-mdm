@@ -28,7 +28,7 @@ export function buildKioskPayload(c: KioskChoice, theme?: KioskTheme): object {
   const common = {
     exitMode: c.exitMode,
     password: c.password || undefined,
-    features: { home: true, notifications: true },
+    features: { home: c.mode !== 'single', recents: false, notifications: false, systemInfo: false, keyguard: false },
     // A direct kiosk action changes the allowed apps, not the configuration's appearance.
     // Include the assigned configuration theme so it does not revert to launcher defaults.
     ...(theme ? { theme } : {}),
