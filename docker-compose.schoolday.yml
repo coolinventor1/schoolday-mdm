@@ -1,0 +1,12 @@
+# SchoolDay pilot: reach through SSH forwarding; no shared-host privileged updater.
+services:
+  caddy:
+    ports:
+      - "127.0.0.1:9095:80"
+  supervisor:
+    environment:
+      AUTO_UPDATE: "0"
+      APPLY_SUPPORTED: "0"
+    volumes: !override
+      - .:/project:ro
+      - backups:/backups
